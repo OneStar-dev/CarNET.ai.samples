@@ -61,4 +61,4 @@ Anyone who has your key can spend its requests. Keep it on a server or on your o
 
 MIT: copy the code into your own projects freely. See [LICENSE](LICENSE).
 
-The example photos in `web/public/examples` are only for running the samples. They are not covered by the MIT licence.
+The example photos in `web/public/examples`, and the screenshot that shows one of them, are only for running and showing the samples. They are not covered by the MIT licence.

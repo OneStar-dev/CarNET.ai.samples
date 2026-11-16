@@ -68,8 +68,10 @@ async function recognize(file) {
         method: 'POST',
         headers: { 'Content-Type': 'application/octet-stream' },
         body: photo,
+        signal: AbortSignal.timeout(90_000),
       });
-    } catch {
+    } catch (error) {
+      if (error.name === 'TimeoutError') throw new Error("This site's server took too long to answer. Try again.");
       throw new Error("Could not reach this site's server. Check your connection and try again.");
     }
     let answer;
@@ -123,6 +125,7 @@ function showPhoto(url) {
   $('result').hidden = false;
   $('photo').hidden = !url;
   if (url) $('photo').src = url;
+  else $('photo').removeAttribute('src');
   $('boxes').replaceChildren();
   $('cars').replaceChildren();
   $('answer').textContent = '';

@@ -1,7 +1,7 @@
 // Tests server.js against a stand-in for the CarNET API, so no real requests are sent. Run: npm test
 import { test, before, after, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { createServer } from 'node:http';
+import { createServer, request } from 'node:http';
 import { createServer as createTcpServer } from 'node:net';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
@@ -17,6 +17,7 @@ const api = createServer(async (req, res) => {
   for await (const chunk of req) chunks.push(chunk);
   received.push({ url: req.url, key: req.headers['api-key'], body: Buffer.concat(chunks) });
   const answer = answers.shift() ?? { status: 200, body: { is_success: true, detections: [] } };
+  if (answer.delay) await new Promise((done) => setTimeout(done, answer.delay));
   res.writeHead(answer.status, { 'Content-Type': 'application/json', ...answer.headers });
   res.end(typeof answer.body === 'string' ? answer.body : JSON.stringify(answer.body));
 });
@@ -81,6 +82,30 @@ test('refuses a photo over 12 MB without calling the API', async () => {
   assert.equal(response.status, 413);
   assert.match((await response.json()).error, /larger than 12 MB/);
   assert.equal(received.length, 0);
+});
+
+test('refuses a photo that says it is over 12 MB before reading it', async () => {
+  const status = await new Promise((done, fail) => {
+    const req = request(`${base}/api/recognize`, { method: 'POST', headers: { 'Content-Length': 14 * 1024 * 1024 } });
+    req.on('response', (response) => done(response.statusCode));
+    req.on('error', fail);
+    req.write(Buffer.alloc(1024)); // only the start: the answer must not wait for the rest
+  });
+  assert.equal(status, 413);
+  assert.equal(received.length, 0);
+});
+
+test('more than 4 photos at once: the fifth is told the site is busy', async () => {
+  for (let i = 0; i < 4; i++) answers.push({ status: 200, body: CAR, delay: 500 });
+  const statuses = (await Promise.all([1, 2, 3, 4, 5].map(async (n) => {
+    if (n === 5) await new Promise((done) => setTimeout(done, 150)); // the first four are with the API by then
+    const response = await recognize(`PHOTO ${n}`);
+    return [response.status, (await response.json()).error];
+  })));
+  assert.deepEqual(statuses.slice(0, 4).map(([status]) => status), [200, 200, 200, 200]);
+  assert.equal(statuses[4][0], 503);
+  assert.match(statuses[4][1], /busy/);
+  assert.equal(received.length, 4);
 });
 
 test('refuses an empty request', async () => {

@@ -48,6 +48,7 @@ a { color: var(--accent); }
 
 .photo { position: relative; display: inline-block; max-width: 100%; }
 .photo img { display: block; max-width: 100%; max-height: 70vh; border-radius: 8px; }
+.photo img[hidden] { display: none; }
 .box {
   position: absolute;
   box-sizing: border-box;

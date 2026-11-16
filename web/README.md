@@ -16,6 +16,8 @@ browser  ── photo ──▶  server.js  ── photo + your key ──▶  C
 
 `server.js` is one file with no packages to install.
 
+The page works in current Chrome, Edge, Firefox and Safari. A photo in a format the browser can't open (HEIC, or TIFF outside Safari) is sent as it is, without shrinking or a preview; the API's answer says if it can't read it.
+
 ## What you need
 
 - **Node.js 22 or later.** Check with `node --version`.
@@ -42,7 +44,7 @@ Set these as environment variables:
 | `CARNET_API_KEY` | | Your API key. Not needed for CarNET Server. |
 | `CARNET_API_URL` | `https://api.carnet.ai/v2/mmg/detect` | The API's address. For [CarNET Server](https://carnet.ai/on-premise): `http://YOUR-SERVER:50052/detect` |
 | `PORT` | `8080` | The port the site listens on |
-| `HOST` | `localhost` | Set `0.0.0.0` to take connections from other machines. The Docker image does this. |
+| `HOST` | `127.0.0.1` | Set `0.0.0.0` to take connections from other machines. The Docker image does this. |
 
 ## Put it online
 
@@ -88,7 +90,14 @@ location / {
 }
 ```
 
-The page uses relative addresses, so it also works under a path, such as `location /car-demo/ { proxy_pass http://127.0.0.1:8080/; }`.
+The page uses relative addresses, so it also works under a path:
+
+```nginx
+location /car-demo/ {
+    proxy_pass http://127.0.0.1:8080/;
+    client_max_body_size 13m;
+}
+```
 
 ## Photo size
 
@@ -105,6 +114,8 @@ To send photos at full size, set `LONG_SIDE` in `public/app.js` to a large numbe
 
 Each photo is one request. When two visitors send photos in the same second and the key allows one a second, the server waits for the next second and sends the second photo then. When the key's daily or monthly limit is used up, visitors see "This site's limit of photos is used up for now."
 
+The server handles at most 4 photos at once, so many uploads at the same moment can't use up its memory. A fifth visitor in that moment sees "This site is busy. Try again in a moment." An upload that takes longer than a minute is cut off.
+
 The server's log shows each request's status, size, time and how many requests the key has left:
 
 ```text
@@ -116,6 +127,7 @@ The server's log shows each request's status, size, time and how many requests t
 - **Examples:** put photos in `public/examples` and small copies in `public/examples/thumb`, then list them in `public/index.html`.
 - **What the API is asked for:** `QUERY` in `server.js`. For example, add `&region=NA` to use the network trained for North America.
 - **Photo size:** `LONG_SIDE` in `public/app.js`.
+- **Photos at once:** `MAX_UPLOADS` in `server.js`.
 
 ## Tests
 

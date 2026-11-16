@@ -12,7 +12,7 @@ import { extname, resolve, sep } from 'node:path';
 const API_URL = process.env.CARNET_API_URL || 'https://api.carnet.ai/v2/mmg/detect';
 const API_KEY = process.env.CARNET_API_KEY || '';
 const PORT = Number(process.env.PORT || 8080);
-const HOST = process.env.HOST || 'localhost';
+const HOST = process.env.HOST || '127.0.0.1';
 
 // What we ask the API for: make, model and generation, body color and angle, for every car in the photo.
 // Add region=NA to use the network trained for North America.
@@ -20,6 +20,7 @@ const QUERY = 'features=mmg,color,angle&box_select=all';
 const TARGET = API_URL + (API_URL.includes('?') ? '&' : '?') + QUERY;
 
 const MAX_BYTES = 12 * 1024 * 1024; // the Cloud API takes photos up to 12 MB
+const MAX_UPLOADS = 4; // photos received or being recognized at once; more get "busy" (keeps memory use small)
 const PUBLIC = resolve(import.meta.dirname, 'public');
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -54,14 +55,34 @@ const server = createServer(async (req, res) => {
   }
 });
 
+server.requestTimeout = 60_000; // an upload that takes longer than a minute is cut off
+
 server.listen(PORT, HOST, () => {
-  console.log(`Car recognition demo: http://${HOST === '0.0.0.0' ? 'localhost' : HOST}:${PORT}`);
+  console.log(`Car recognition demo: http://${['0.0.0.0', '127.0.0.1'].includes(HOST) ? 'localhost' : HOST}:${PORT}`);
   console.log(`Sends photos to ${API_URL}${API_KEY ? ' with your key' : ' without a key'}`);
 });
 
 // POST /api/recognize: the photo's bytes in the body. Answers with the API's own JSON, or { error } when
 // something went wrong, in words the page can show as they are.
+let uploads = 0;
 async function recognize(req, res) {
+  if (Number(req.headers['content-length']) > MAX_BYTES) {
+    res.setHeader('Connection', 'close'); // answer now, without reading the photo
+    return send(res, 413, { error: 'The photo is larger than 12 MB.' });
+  }
+  if (uploads >= MAX_UPLOADS) {
+    await readBody(req, false);
+    return send(res, 503, { error: 'This site is busy. Try again in a moment.' });
+  }
+  uploads++;
+  try {
+    await recognizeOne(req, res);
+  } finally {
+    uploads--;
+  }
+}
+
+async function recognizeOne(req, res) {
   const photo = await readBody(req);
   if (photo === null) return send(res, 413, { error: 'The photo is larger than 12 MB.' });
   if (photo.length === 0) return send(res, 400, { error: 'No photo was sent.' });
@@ -122,14 +143,16 @@ function waitForRate(headers) {
   return Math.min(Math.max(reset - Date.now(), 100), 1100);
 }
 
-// The request body, or null when it is larger than the API accepts.
-function readBody(req) {
+// The request body, or null when it is larger than the API accepts (what arrives after 12 MB is read and dropped).
+// keep = false reads the body only to drop it.
+function readBody(req, keep = true) {
   return new Promise((done, fail) => {
     const chunks = [];
     let size = 0;
     req.on('data', (chunk) => {
       size += chunk.length;
-      if (size <= MAX_BYTES) chunks.push(chunk);
+      if (keep && size <= MAX_BYTES) chunks.push(chunk);
+      else chunks.length = 0;
     });
     req.on('end', () => done(size > MAX_BYTES ? null : Buffer.concat(chunks)));
     req.on('error', fail);
