@@ -5,11 +5,11 @@ The [CarNET API](https://carnet.ai/make-model-recognition-api) recognizes a car'
 | Sample | What it does | Language |
 |---|---|---|
 | [Folder script](shell/) | Recognizes every photo in a folder, keeping to your key's limits, and writes a CSV | bash, curl, jq |
-| Micro website | Example photos plus drop, pick or paste a photo, and see the result | Node.js, HTML |
+| [Micro website](web/) | Example photos plus drop, pick or paste a photo, and see the result with a box around each car | Node.js, HTML |
 | iOS app | Take or pick a photo, shrink it, and see the result | Swift |
 | Android app | The same on Android | Kotlin |
 
-The website and the apps are on their way.
+The apps are on their way.
 
 ## Get a key
 
@@ -50,7 +50,7 @@ The [API description](https://app.swaggerhub.com/apis-docs/CarNET.ai/MMG/2.1) li
 
 Anyone who has your key can spend its requests. Keep it on a server or on your own computer:
 
-- Never put it into a web page. The micro website sample shows how a small server adds the key to each request.
+- Never put it into a web page. The [micro website](web/) shows how a small server adds the key to each request.
 - An app you publish should send photos through your own server, not straight to the API with the key inside the app.
 
 ## CarNET Server
@@ -60,3 +60,5 @@ Anyone who has your key can spend its requests. Keep it on a server or on your o
 ## Licence
 
 MIT: copy the code into your own projects freely. See [LICENSE](LICENSE).
+
+The example photos in `web/public/examples` are only for running the samples. They are not covered by the MIT licence.
