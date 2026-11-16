@@ -103,7 +103,7 @@ To send a photo again, delete its `.json` file and run the script.
 
 ## CarNET Server
 
-[CarNET Server](https://carnet.ai/on-premise) answers the same requests on your own machine, with no key and no limits:
+[CarNET Server](https://carnet.ai/on-premise) answers the same requests on your own machine. It needs no key and has no daily or monthly limit. Its per-second limit, set by your licence, comes in the same `X-Rate-Limit-*` headers, so the script keeps to it the same way:
 
 ```sh
 ./carnet-folder.sh --api http://YOUR-SERVER:50052/detect ~/Pictures/cars

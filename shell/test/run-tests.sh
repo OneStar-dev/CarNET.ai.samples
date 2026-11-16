@@ -201,14 +201,17 @@ check "two cars get rows 1 and 2, in order" grep -q '^"two.jpg",2,"recognized","
 check "a make-and-model answer is reported" says "mm.jpg: Porsche Taycan 98.7%, Black, front-left"
 check "a make-and-model answer has a row" grep -q '^"mm.jpg",1,"recognized","Porsche","Taycan",,,0.9871' "$M/carnet-results/results.csv"
 
-# --- CarNET Server: no key, no limits ------------------------------------------------------------------------
+# --- CarNET Server: no key, no daily limit, a per-second limit --------------------------------------------------
 S=$WORK/server
 photo "$S/1.jpg" CAR
 photo "$S/2.jpg" NOCAR
-start_server --no-key
+photo "$S/3.jpg" CAR
+photo "$S/4.jpg" CAR
+start_server --no-key --rate 2
 KEY='' run "$S"
 check "CarNET Server without a key works" code_is 0
 check "CarNET Server: no limit line" lacks "The key has"
+check "CarNET Server: its per-second limit is kept without refusals" [ "$(server_said '^429')" = 0 ]
 
 echo
 echo "$PASSED passed, $FAILED failed"

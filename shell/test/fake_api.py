@@ -26,7 +26,7 @@ PORT = int(args[0])
 RATE = int(args[args.index("--rate") + 1]) if "--rate" in args else 2
 QUOTA = int(args[args.index("--quota") + 1]) if "--quota" in args else 1000
 QUOTA_SECONDS = float(args[args.index("--quota-seconds") + 1]) if "--quota-seconds" in args else 86400
-NO_KEY = "--no-key" in args  # CarNET Server: no key, no limits
+NO_KEY = "--no-key" in args  # CarNET Server: no key and no daily limit, only the per-second one
 
 lock = threading.Lock()
 rate_window = {"start": 0.0, "used": 0}
@@ -79,7 +79,14 @@ class Handler(BaseHTTPRequestHandler):
             return self.send(404, {"message": "Not found"})
 
         headers = []
-        if not NO_KEY:
+        if NO_KEY:
+            with lock:
+                ok, left, reset = count(rate_window, 1.0, RATE, time.time())
+            headers = [("X-Rate-Limit-Limit", RATE), ("X-Rate-Limit-Remaining", left), ("X-Rate-Limit-Reset", reset)]
+            if not ok:
+                return self.send(429, {"message": f"Rate limit exceeded ! You reach the limit of {RATE} requests per 1 seconds",
+                                       "http_status_code": 429}, headers)
+        else:
             key = self.headers.get("api-key")
             if not key:
                 return self.send(401, {"message": "Unauthorized", "http_status_code": 401})
