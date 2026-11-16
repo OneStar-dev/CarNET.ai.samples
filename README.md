@@ -6,10 +6,8 @@ The [CarNET API](https://carnet.ai/make-model-recognition-api) recognizes a car'
 |---|---|---|
 | [Folder script](shell/) | Recognizes every photo in a folder, keeping to your key's limits, and writes a CSV | bash, curl, jq |
 | [Micro website](web/) | Example photos plus drop, pick or paste a photo, and see the result with a box around each car | Node.js, HTML |
-| iOS app | Take or pick a photo, shrink it, and see the result | Swift |
-| Android app | The same on Android | Kotlin |
-
-The apps are on their way.
+| [iOS app](ios/) | Take or choose a photo, shrink it, and see the result with a box around each car | Swift, SwiftUI |
+| [Android app](android/) | The same on Android | Kotlin, Jetpack Compose |
 
 ## Get a key
 
@@ -51,7 +49,7 @@ The [API description](https://app.swaggerhub.com/apis-docs/CarNET.ai/MMG/2.1) li
 Anyone who has your key can spend its requests. Keep it on a server or on your own computer:
 
 - Never put it into a web page. The [micro website](web/) shows how a small server adds the key to each request.
-- An app you publish should send photos through your own server, not straight to the API with the key inside the app.
+- An app you publish should send photos through your own server, not straight to the API with the key inside the app. The apps' API address setting can point at the micro website's server, which adds the key.
 
 ## CarNET Server
 
@@ -61,4 +59,4 @@ Anyone who has your key can spend its requests. Keep it on a server or on your o
 
 MIT: copy the code into your own projects freely. See [LICENSE](LICENSE).
 
-The example photos in `web/public/examples`, and the screenshot that shows one of them, are only for running and showing the samples. They are not covered by the MIT licence.
+The example photos (in `web/public/examples`, `ios/CarRecognition/example.jpg` and `android/app/src/main/assets/example.jpg`) and the screenshots that show them are only for running and showing the samples. They are not covered by the MIT licence.
