@@ -113,6 +113,22 @@ class CarnetClientTest {
     }
 
     @Test
+    fun yourOwnServersLimitIsNotRetried() {
+        answers += Triple(429, emptyMap(), """{"error":"This site's limit of photos is used up for now. Try again later."}""")
+        val error = failure(client(key = "", address = "http://127.0.0.1:${server.address.port}/api/recognize"))
+        assertEquals("This site's limit of photos is used up for now. Try again later.", error?.message)
+        assertEquals(1, requests.size)
+    }
+
+    @Test
+    fun aRedirectIsNotFollowed() {
+        answers += Triple(307, mapOf("Location" to "http://127.0.0.1:${server.address.port}/elsewhere"), "")
+        val error = failure(client())
+        assertEquals(307, (error as RecognitionError.ServiceProblem).status)
+        assertEquals(1, requests.size) // the key never went to /elsewhere
+    }
+
+    @Test
     fun noAnswer() {
         val port = server.address.port
         server.stop(0)

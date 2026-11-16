@@ -4,8 +4,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.media.ExifInterface
-import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.io.InputStream
 import kotlin.math.max
 import kotlin.math.min
 
@@ -21,23 +21,26 @@ object PhotoShrinker {
     const val LONG_SIDE = 2048
     const val QUALITY = 85
 
-    /** The bitmap to show and the JPEG to send, or null when the photo can't be read. */
-    fun jpeg(photo: ByteArray): Pair<Bitmap, ByteArray>? {
+    /**
+     * The bitmap to show and the JPEG to send, or null when the photo can't be read. [open] opens the photo; it is
+     * called three times (size, pixels, rotation flag), so the whole file never has to sit in memory.
+     */
+    fun jpeg(open: () -> InputStream?): Pair<Bitmap, ByteArray>? {
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-        BitmapFactory.decodeByteArray(photo, 0, photo.size, bounds)
+        (open() ?: return null).use { BitmapFactory.decodeStream(it, null, bounds) } // reads the size only; returns null
         if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
 
         // Decode at a power-of-two fraction that still has at least LONG_SIDE pixels, so a 48-megapixel photo
         // never sits in memory at full size, then scale to exactly LONG_SIDE.
         var sample = 1
         while (max(bounds.outWidth, bounds.outHeight) / (sample * 2) >= LONG_SIDE) sample *= 2
-        val decoded = BitmapFactory.decodeByteArray(photo, 0, photo.size, BitmapFactory.Options().apply { inSampleSize = sample })
+        val decoded = open()?.use { BitmapFactory.decodeStream(it, null, BitmapFactory.Options().apply { inSampleSize = sample }) }
             ?: return null
 
         val scale = min(1f, LONG_SIDE.toFloat() / max(decoded.width, decoded.height))
         val matrix = Matrix().apply {
             postScale(scale, scale)
-            postConcat(upright(photo))
+            postConcat(upright(open))
         }
         val upright = Bitmap.createBitmap(decoded, 0, 0, decoded.width, decoded.height, matrix, true)
         val jpeg = ByteArrayOutputStream().also { upright.compress(Bitmap.CompressFormat.JPEG, QUALITY, it) }.toByteArray()
@@ -45,9 +48,10 @@ object PhotoShrinker {
     }
 
     /** The turn (and mirror) that the camera's rotation flag asks for. */
-    private fun upright(photo: ByteArray): Matrix {
+    private fun upright(open: () -> InputStream?): Matrix {
         val orientation = try {
-            ExifInterface(ByteArrayInputStream(photo)).getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+            open()?.use { ExifInterface(it).getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL) }
+                ?: ExifInterface.ORIENTATION_NORMAL
         } catch (e: Exception) {
             ExifInterface.ORIENTATION_NORMAL
         }

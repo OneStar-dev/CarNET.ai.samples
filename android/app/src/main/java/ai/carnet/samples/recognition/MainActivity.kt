@@ -37,6 +37,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -64,6 +65,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
@@ -229,6 +232,7 @@ private fun SettingsScreen(onClose: () -> Unit) {
     val context = LocalContext.current
     val settings = remember { Settings(context) }
     var key by rememberSaveable { mutableStateOf(settings.key) }
+    var showKey by rememberSaveable { mutableStateOf(false) }
     var address by rememberSaveable { mutableStateOf(settings.address) }
     BackHandler(onBack = onClose)
 
@@ -255,10 +259,15 @@ private fun SettingsScreen(onClose: () -> Unit) {
                 key, { key = it },
                 label = { Text("API key") },
                 singleLine = true,
+                visualTransformation = if (showKey) VisualTransformation.None else PasswordVisualTransformation(),
                 textStyle = MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
                 keyboardOptions = KeyboardOptions(autoCorrectEnabled = false, keyboardType = KeyboardType.Ascii),
                 modifier = Modifier.fillMaxWidth().testTag("apiKey"),
             )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Switch(checked = showKey, onCheckedChange = { showKey = it })
+                Text("Show the key", Modifier.padding(start = 8.dp))
+            }
             Text(
                 "Kept in this app's private storage. Get a free trial key at carnet.ai. Leave it empty for CarNET Server or your own server.",
                 style = MaterialTheme.typography.bodySmall, color = Muted,

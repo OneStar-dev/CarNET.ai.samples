@@ -1,4 +1,6 @@
 import Observation
+import PhotosUI
+import SwiftUI
 import UIKit
 
 /// What the screen shows: the photo sent, the answer, and a status line.
@@ -11,9 +13,12 @@ final class Recognizer {
     var isError = false
     var busy = false
 
-    /// A photo from the library or the example.
-    func recognize(data: Data) async {
-        await run { PhotoShrinker.jpeg(from: data) }
+    /// A photo from the library. Loading it can take a while (an iCloud photo is downloaded first).
+    func recognize(item: PhotosPickerItem) async {
+        await run {
+            guard let data = try? await item.loadTransferable(type: Data.self) else { return nil }
+            return PhotoShrinker.jpeg(from: data)
+        }
     }
 
     /// A photo from the camera.
@@ -22,19 +27,20 @@ final class Recognizer {
     }
 
     func recognizeExample() async {
-        guard let url = Bundle.main.url(forResource: "example", withExtension: "jpg"), let data = try? Data(contentsOf: url) else { return }
-        await recognize(data: data)
+        guard let url = Bundle.main.url(forResource: "example", withExtension: "jpg") else { return }
+        await run { (try? Data(contentsOf: url)).flatMap(PhotoShrinker.jpeg(from:)) }
     }
 
-    private func run(_ prepare: @escaping @Sendable () -> (UIImage, Data)?) async {
+    private func run(_ prepare: @escaping @Sendable () async -> (UIImage, Data)?) async {
         guard !busy else { return }
         busy = true
         defer { busy = false }
+        photo = nil
         answer = nil
         rawAnswer = ""
         isError = false
         status = "Recognizing…"
-        // Shrinking a large photo takes a moment: do it off the main thread.
+        // Loading and shrinking a large photo take a moment: do it off the main thread.
         guard let prepared = await Task.detached(operation: prepare).value else {
             show(RecognitionError.photoNotOpened)
             return

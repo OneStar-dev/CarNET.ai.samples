@@ -4,16 +4,20 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var address = Settings.address
     @State private var key = Settings.key
+    @State private var showKey = false
 
     var body: some View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("API key", text: $key)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
-                        .font(.body.monospaced())
-                        .accessibilityIdentifier("apiKey")
+                    Group {
+                        if showKey { TextField("API key", text: $key) } else { SecureField("API key", text: $key) }
+                    }
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .font(.body.monospaced())
+                    .accessibilityIdentifier("apiKey")
+                    Toggle("Show the key", isOn: $showKey)
                 } header: {
                     Text("API key")
                 } footer: {

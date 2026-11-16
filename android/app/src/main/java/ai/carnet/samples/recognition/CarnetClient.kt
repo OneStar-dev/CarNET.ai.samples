@@ -37,8 +37,9 @@ class CarnetClient(private val address: String, private val key: String) {
         if (url.protocol != "http" && url.protocol != "https") throw RecognitionError.BadAddress()
 
         var reply = send(url, photo)
-        // Too fast for the key's per-second limit: wait for the next second and try once more.
-        if (reply.status == 429 && !reply.limitUsedUp) {
+        // Too fast for the key's per-second limit: wait for the next second and try once more. (Your own server's
+        // refusals come as {"error": …}: it has already tried again itself.)
+        if (reply.status == 429 && !reply.limitUsedUp && ownServerError(reply.body) == null) {
             Thread.sleep(reply.waitForRate())
             reply = send(url, photo)
         }
@@ -49,6 +50,7 @@ class CarnetClient(private val address: String, private val key: String) {
         val connection = url.openConnection() as HttpURLConnection
         try {
             connection.requestMethod = "POST"
+            connection.instanceFollowRedirects = false // the key (and the photo) never go on to an address you didn't set
             connection.doOutput = true
             connection.connectTimeout = 15_000
             connection.readTimeout = 30_000
@@ -84,8 +86,7 @@ class CarnetClient(private val address: String, private val key: String) {
     /** Turns an HTTP answer into the API's answer or a plain error. */
     internal fun read(reply: Reply): Answer {
         val json = try { JSONObject(reply.body) } catch (e: Exception) { null }
-        // Your own server (like the micro website) answers its errors as {"error": "…"}.
-        val ownError = json?.opt("error") as? String
+        val ownError = ownServerError(reply.body)
         if (reply.status != 200 && ownError != null) throw RecognitionError.Server(ownError)
         when (reply.status) {
             200 -> {}
@@ -105,6 +106,10 @@ class CarnetClient(private val address: String, private val key: String) {
         val cars = (0 until detections.length()).map { detections.getJSONObject(it) }.mapNotNull(::car)
         return Answer(cars, json.optJSONObject("meta")?.optDouble("time")?.takeIf { !it.isNaN() }, json.toString(2))
     }
+
+    /** Your own server (like the micro website) answers its errors as {"error": "…"}. */
+    private fun ownServerError(body: String): String? =
+        try { JSONObject(body).opt("error") as? String } catch (e: Exception) { null }
 
     /** A detection that comes with a make and model is a car (mmg, or mm when only those were asked for). */
     private fun car(detection: JSONObject): Car? {

@@ -104,7 +104,9 @@ async function recognizeOne(req, res) {
     return send(res, 502, { error: "The recognition service refused this site's API key. The site's owner needs to check it." });
   }
   if (status === 413) return send(res, 413, { error: 'The photo is larger than 12 MB.' });
-  if (status >= 500) return send(res, 502, { error: 'The recognition service had a problem. Try again in a moment.' });
+  if (status >= 500 || (status >= 300 && status < 400)) {
+    return send(res, 502, { error: 'The recognition service had a problem. Try again in a moment.' });
+  }
 
   let json;
   try {
@@ -123,6 +125,7 @@ async function callApi(photo) {
       method: 'POST',
       headers: { 'Content-Type': 'application/octet-stream', ...(API_KEY && { 'api-key': API_KEY }) },
       body: photo,
+      redirect: 'manual', // the key (and the photo) never go on to an address you didn't set; the API doesn't redirect
       signal: AbortSignal.timeout(30_000),
     });
     const text = await response.text();

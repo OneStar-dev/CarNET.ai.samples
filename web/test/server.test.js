@@ -152,6 +152,13 @@ test('a server error or an unreadable answer gives a plain error', async () => {
   assert.match((await response.json()).error, /could not read/);
 });
 
+test('a redirect is not followed, so the key stays with the API address', async () => {
+  answers.push({ status: 307, body: '', headers: { Location: '/elsewhere' } });
+  const response = await recognize('PHOTO');
+  assert.equal(response.status, 502);
+  assert.equal(received.length, 1); // nothing was sent to /elsewhere
+});
+
 test("a photo the API can't read: its answer is passed on", async () => {
   const unreadable = { is_success: false, error: { code: 8, message: 'Error decoding image' }, detections: [] };
   answers.push({ status: 200, body: unreadable });

@@ -95,6 +95,13 @@ final class CarnetClientTests: XCTestCase {
         XCTAssertEqual(error7, .server("This site is busy. Try again in a moment."))
     }
 
+    func testYourOwnServersLimitIsNotRetried() async {
+        Stub.answers = [(429, [:], #"{"error":"This site's limit of photos is used up for now. Try again later."}"#)]
+        let error = await failure(client(key: "", address: "https://example.com/api/recognize"))
+        XCTAssertEqual(error, .server("This site's limit of photos is used up for now. Try again later."))
+        XCTAssertEqual(Stub.requests.count, 1)
+    }
+
     func testRefusesAPhotoOver12MB() async {
         do throws(RecognitionError) {
             _ = try await client().recognize(Data(count: CarnetClient.maxBytes + 1))
@@ -102,6 +109,42 @@ final class CarnetClientTests: XCTestCase {
         } catch {
             XCTAssertEqual(error, .tooLarge)
         }
+    }
+
+    /// All eight camera rotation flags. The photo is 40 x 20 with its top-left corner red; once upright, the red
+    /// corner must be where the flag says it belongs.
+    func testEveryRotationFlagComesOutUpright() throws {
+        let expected: [Int: (size: CGSize, red: CGPoint)] = [
+            1: (CGSize(width: 40, height: 20), CGPoint(x: 2, y: 2)), 2: (CGSize(width: 40, height: 20), CGPoint(x: 37, y: 2)),
+            3: (CGSize(width: 40, height: 20), CGPoint(x: 37, y: 17)), 4: (CGSize(width: 40, height: 20), CGPoint(x: 2, y: 17)),
+            5: (CGSize(width: 20, height: 40), CGPoint(x: 2, y: 2)), 6: (CGSize(width: 20, height: 40), CGPoint(x: 17, y: 2)),
+            7: (CGSize(width: 20, height: 40), CGPoint(x: 17, y: 37)), 8: (CGSize(width: 20, height: 40), CGPoint(x: 2, y: 37)),
+        ]
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        let stored = UIGraphicsImageRenderer(size: CGSize(width: 40, height: 20), format: format).image { context in
+            UIColor.white.setFill(); context.fill(CGRect(x: 0, y: 0, width: 40, height: 20))
+            UIColor.red.setFill(); context.fill(CGRect(x: 0, y: 0, width: 8, height: 8))
+        }
+        for (flag, want) in expected.sorted(by: { $0.key < $1.key }) {
+            let data = NSMutableData()
+            let destination = try XCTUnwrap(CGImageDestinationCreateWithData(data, UTType.png.identifier as CFString, 1, nil))
+            CGImageDestinationAddImage(destination, try XCTUnwrap(stored.cgImage), [kCGImagePropertyOrientation: flag] as CFDictionary)
+            CGImageDestinationFinalize(destination)
+            let (photo, _) = try XCTUnwrap(PhotoShrinker.jpeg(from: data as Data))
+            XCTAssertEqual(photo.size, want.size, "flag \(flag)")
+            XCTAssertTrue(isRed(photo, at: want.red), "flag \(flag): the red corner isn't at \(want.red)")
+        }
+    }
+
+    private func isRed(_ image: UIImage, at point: CGPoint) -> Bool {
+        guard let cgImage = image.cgImage else { return false }
+        var pixel = [UInt8](repeating: 0, count: 4)
+        let context = CGContext(data: &pixel, width: 1, height: 1, bitsPerComponent: 8, bytesPerRow: 4,
+                                space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)!
+        context.draw(cgImage, in: CGRect(x: -point.x, y: -(CGFloat(cgImage.height) - 1 - point.y),
+                                         width: CGFloat(cgImage.width), height: CGFloat(cgImage.height)))
+        return pixel[0] > 200 && pixel[1] < 80 && pixel[2] < 80
     }
 
     func testShrinksALargePhotoAndTurnsItUpright() throws {

@@ -42,7 +42,7 @@ The first time, the iPhone asks you to trust the developer: **Settings → Gener
 | **API key** | Your CarNET API key. It's kept in the iPhone's keychain. Leave it empty for CarNET Server or your own server. |
 | **API address** | The Cloud API: `https://api.carnet.ai/v2/mmg/detect` (the default). [CarNET Server](https://carnet.ai/on-premise): `http://YOUR-SERVER:50052/detect`. Your own server: its address, such as the micro website's `https://YOUR-SITE/api/recognize`. |
 
-CarNET Server speaks plain HTTP on your own network. The app allows plain HTTP to local addresses only (`NSAllowsLocalNetworking` in `Info.plist`); for a server reached by a public name, put HTTPS in front of it.
+CarNET Server speaks plain HTTP on your own network. The app allows plain HTTP only to addresses written as IP numbers, `.local` names and names without a dot (`NSAllowsLocalNetworking` in `Info.plist`). For a server reached by a public name, put HTTPS in front of it.
 
 ## Before you publish an app
 

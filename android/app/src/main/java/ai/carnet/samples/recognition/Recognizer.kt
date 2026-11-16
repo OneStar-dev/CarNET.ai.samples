@@ -21,21 +21,23 @@ class Recognizer(private val app: Application) : AndroidViewModel(app) {
     var busy by mutableStateOf(false)
 
     /** A photo from the camera or the photo picker. */
-    fun recognize(uri: Uri) = run { app.contentResolver.openInputStream(uri)?.use { it.readBytes() } }
+    fun recognize(uri: Uri) = run { app.contentResolver.openInputStream(uri) }
 
-    fun recognizeExample() = run { app.assets.open("example.jpg").use { it.readBytes() } }
+    fun recognizeExample() = run { app.assets.open("example.jpg") }
 
-    private fun run(read: () -> ByteArray?) {
+    private fun run(open: () -> java.io.InputStream?) {
         if (busy) return
         busy = true
+        photo = null
         answer = null
         isError = false
         status = "Recognizing…"
         viewModelScope.launch {
             try {
                 // Reading and shrinking a large photo takes a moment: do it off the main thread.
-                val (bitmap, jpeg) = withContext(Dispatchers.IO) { read()?.let(PhotoShrinker::jpeg) }
-                    ?: throw RecognitionError.PhotoNotOpened()
+                val (bitmap, jpeg) = withContext(Dispatchers.IO) {
+                    try { PhotoShrinker.jpeg(open) } catch (e: OutOfMemoryError) { null }
+                } ?: throw RecognitionError.PhotoNotOpened()
                 photo = bitmap
                 val result = withContext(Dispatchers.IO) { Settings(app).client().recognize(jpeg) }
                 answer = result

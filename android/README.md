@@ -86,7 +86,8 @@ In `app/src/main/java/ai/carnet/samples/recognition/`:
 ## Tests
 
 ```sh
-./gradlew testDebugUnitTest
+./gradlew testDebugUnitTest          # on your computer
+./gradlew connectedDebugAndroidTest  # on a connected phone or emulator
 ```
 
-The tests run the client against a stand-in for the API on your computer, so they send no real requests.
+The first runs the client against a stand-in for the API on your computer, so it sends no real requests. The second checks the photo shrinker on a device: every camera rotation flag comes out upright, and the photo sent carries no location or camera details.

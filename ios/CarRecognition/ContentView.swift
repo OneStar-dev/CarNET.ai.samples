@@ -52,11 +52,7 @@ struct ContentView: View {
             .onChange(of: libraryItem) {
                 guard let item = libraryItem else { return }
                 libraryItem = nil
-                Task {
-                    if let data = try? await item.loadTransferable(type: Data.self) {
-                        await model.recognize(data: data)
-                    }
-                }
+                Task { await model.recognize(item: item) }
             }
             .onAppear {
                 if Settings.key.isEmpty && Settings.address == CarnetClient.cloudAddress {

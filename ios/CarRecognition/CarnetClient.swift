@@ -29,8 +29,9 @@ struct CarnetClient: Sendable {
         if !key.isEmpty { request.setValue(key, forHTTPHeaderField: "api-key") }
 
         var (data, response) = try await send(request, photo)
-        // Too fast for the key's per-second limit: wait for the next second and try once more.
-        if response.statusCode == 429 && !Self.isLimitUsedUp(data) {
+        // Too fast for the key's per-second limit: wait for the next second and try once more. (Your own server's
+        // refusals come as {"error": …}: it has already tried again itself.)
+        if response.statusCode == 429 && !Self.isLimitUsedUp(data) && Self.ownServerError(data) == nil {
             try? await Task.sleep(for: .milliseconds(Self.waitForRate(response)))
             (data, response) = try await send(request, photo)
         }
@@ -39,7 +40,7 @@ struct CarnetClient: Sendable {
 
     private func send(_ request: URLRequest, _ photo: Data) async throws(RecognitionError) -> (Data, HTTPURLResponse) {
         do {
-            let (data, response) = try await session.upload(for: request, from: photo)
+            let (data, response) = try await session.upload(for: request, from: photo, delegate: NoRedirects())
             guard let http = response as? HTTPURLResponse else { throw RecognitionError.notAnswered }
             return (data, http)
         } catch {
@@ -50,8 +51,7 @@ struct CarnetClient: Sendable {
     /// Turns an HTTP answer into the API's answer or a plain error.
     static func read(_ data: Data, _ response: HTTPURLResponse) throws(RecognitionError) -> (Answer, String) {
         let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
-        // Your own server (like the micro website) answers its errors as {"error": "…"}.
-        if response.statusCode != 200, let message = json?["error"] as? String { throw .server(message) }
+        if response.statusCode != 200, let message = ownServerError(data) { throw .server(message) }
         switch response.statusCode {
         case 200: break
         case 401, 403: throw .keyRefused
@@ -70,6 +70,11 @@ struct CarnetClient: Sendable {
         return (answer, pretty)
     }
 
+    /// Your own server (like the micro website) answers its errors as {"error": "…"}.
+    static func ownServerError(_ data: Data) -> String? {
+        (try? JSONSerialization.jsonObject(with: data) as? [String: Any])?["error"] as? String
+    }
+
     static func isLimitUsedUp(_ data: Data) -> Bool {
         String(decoding: data, as: UTF8.self).contains("Quota exceeded")
     }
@@ -84,6 +89,14 @@ struct CarnetClient: Sendable {
     static func resetTime(_ response: HTTPURLResponse, _ header: String) -> Date? {
         guard let value = response.value(forHTTPHeaderField: header), let ms = Double(value), ms > 0 else { return nil }
         return Date(timeIntervalSince1970: ms / 1000)
+    }
+}
+
+/// Refuses redirects, so the key (and the photo) never go on to an address you didn't set. The API doesn't redirect.
+private final class NoRedirects: NSObject, URLSessionTaskDelegate, Sendable {
+    func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse,
+                    newRequest request: URLRequest) async -> URLRequest? {
+        nil
     }
 }
 
