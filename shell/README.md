@@ -79,7 +79,7 @@ Run the same command again then to carry on, or add --wait to let it wait.
 
 If another program uses the same key, the API may refuse a request with HTTP 429. The script handles that the same way: it waits and sends the photo again, or stops when the limit is used up.
 
-Network and server errors are retried 3 times. A photo that still gets no answer is sent again at the next run.
+A network or server error is tried again after 2, 8 and 18 seconds, so a photo can take up to 4 requests. A photo that still gets no answer is sent again at the next run. The script never sends a retry once the API has said the limit is used up.
 
 ## Options
 
@@ -92,7 +92,12 @@ Network and server errors are retried 3 times. A photo that still gets no answer
 | `--params QUERY` | Other API parameters, such as `box_select=all` to recognize every car in a photo, not only the one in the centre |
 | `--api URL` | The API's address. Default: `https://api.carnet.ai/v2/mmg/detect` |
 
-Exit codes: `0` every photo answered, `1` some photos got no answer (or the key was refused), `2` wrong options, `3` stopped because the limit ran out.
+Exit codes:
+
+- `0`: finished. Photos over 12 MB are skipped and listed.
+- `1`: some photos got no answer, a folder could not be read, or an error stopped the run (for example, the key was refused).
+- `2`: wrong options.
+- `3`: stopped because the key's limit ran out.
 
 To send a photo again, delete its `.json` file and run the script.
 
@@ -106,14 +111,14 @@ To send a photo again, delete its `.json` file and run the script.
 
 ## Run it every night
 
-Keep the key in a file only you can read, then add a line to your crontab (`crontab -e`). This one runs at 02:00 and waits whenever the limit runs out:
+Keep the key in a file only you can read, then add a line to your crontab (`crontab -e`). This one runs at 02:00 and waits whenever the limit runs out. With `--wait`, a run with many photos can last until the next night, so `flock` (Linux) skips the new run while the old one is still going; two runs on the same folder would send the same photos twice:
 
 ```sh
 echo 'your-key' > ~/.carnet-key && chmod 600 ~/.carnet-key
 ```
 
 ```cron
-0 2 * * * CARNET_API_KEY=$(cat ~/.carnet-key) /path/to/carnet-folder.sh --wait /data/photos >> ~/carnet-folder.log 2>&1
+0 2 * * * CARNET_API_KEY=$(cat ~/.carnet-key) flock -n /tmp/carnet-folder.lock /path/to/carnet-folder.sh --wait /data/photos >> ~/carnet-folder.log 2>&1
 ```
 
 ## Tests

@@ -4,8 +4,10 @@
 It answers like the Cloud API, including the limit headers and the 429 refusals, but decides each answer from the
 photo's first bytes instead of recognizing anything:
 
-    CAR...    one car            NOCAR...  no car
-    BAD...    unreadable photo   FLAKY...  HTTP 500 the first time, then one car
+    CAR...      one car              NOCAR...    no car
+    TWOCARS...  two cars             MMONLY...   one car, make and model only
+    BAD...      unreadable photo     FLAKY...    HTTP 500 the first time, then one car
+    REVOKED...  HTTP 403, as if the key had been revoked just now
 
 Usage: fake_api.py PORT [--rate N] [--quota N] [--quota-seconds S] [--no-key]
 Writes one line per request to stdout: "<status> <what>". Only for tests; never expose it.
@@ -81,7 +83,7 @@ class Handler(BaseHTTPRequestHandler):
             key = self.headers.get("api-key")
             if not key:
                 return self.send(401, {"message": "Unauthorized", "http_status_code": 401})
-            if key != KEY:
+            if key != KEY or photo.startswith(b"REVOKED"):
                 return self.send(403, {"message": "API Key is not valid or is expired / revoked.", "http_status_code": 403})
             with lock:
                 now = time.time()
@@ -105,6 +107,15 @@ class Handler(BaseHTTPRequestHandler):
         if photo.startswith(b"FLAKY") and digest not in seen:
             seen.add(digest)
             return self.send(500, {"what": "server error"}, headers)
+        if photo.startswith(b"TWOCARS"):
+            return self.send(200, {"is_success": True, "detections": [car("Porsche", "Taycan", "I facelift", "2024-"),
+                                                                      car("Volvo", "XC60", "I facelift", "2013-2017")],
+                                   "meta": meta, "what": "two cars"}, headers)
+        if photo.startswith(b"MMONLY"):
+            only = car("Porsche", "Taycan", "", "")
+            only["mm"] = [{key: only["mmg"][0][key] for key in ("make_id", "make_name", "model_id", "model_name", "probability")}]
+            del only["mmg"]
+            return self.send(200, {"is_success": True, "detections": [only], "meta": meta, "what": "make and model"}, headers)
         if photo.startswith(b"CAR") or photo.startswith(b"FLAKY"):
             return self.send(200, {"is_success": True, "detections": [car("Porsche", "Taycan", "I facelift", "2024-")],
                                    "meta": meta, "what": "car"}, headers)

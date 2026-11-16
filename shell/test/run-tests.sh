@@ -156,6 +156,51 @@ O=$WORK/custom-out
 run --out "$O/" "$K"
 check "--out with a trailing slash works" present "$O/1.jpg.json" "$O/results.csv"
 
+# --- found in review (Astra, 2026-11-16) -----------------------------------------------------------------------
+F=$WORK/retry-at-limit
+photo "$F/1.jpg" CAR
+photo "$F/2.jpg" FLAKY
+photo "$F/3.jpg" CAR
+start_server --rate 10 --quota 2 --quota-seconds 300
+run "$F"
+check "a server error on the last request: it stops with exit 3" code_is 3
+check "and sends no retry the API would refuse" [ "$(server_said 'Quota exceeded')" = 0 ]
+
+V=$WORK/revoked
+photo "$V/1.jpg" CAR
+photo "$V/2.jpg" REVOKED
+start_server --rate 10
+run "$V"
+check "a key refused mid-run stops it with exit 1" code_is 1
+check "the answers so far are in results.csv" [ "$(wc -l <"$V/carnet-results/results.csv" | tr -d ' ')" = 2 ]
+
+U=$WORK/unreadable
+photo "$U/1.jpg" CAR
+photo "$U/locked/2.jpg" CAR
+chmod 000 "$U/locked"
+run -r "$U"
+chmod 755 "$U/locked"
+check "a folder that can't be read: exit 1" code_is 1
+check "and it says so" says "Some folders could not be read"
+check "the readable photos still get answers" says "Sent 1 photo: 1 with a car."
+
+N=$WORK/names
+photo "$N/a
+x.jpg" CAR
+photo "$N/b.jpg" CAR
+run "$N"
+first_photo() { python3 -c 'import csv, sys; print(repr([r[0] for r in csv.reader(open(sys.argv[1], newline=""))][1:]))' "$1"; }
+check "a name with a line break stays whole in results.csv" [ "$(first_photo "$N/carnet-results/results.csv")" = "['a\\nx.jpg', 'b.jpg']" ]
+
+M=$WORK/many
+photo "$M/two.jpg" TWOCARS
+photo "$M/mm.jpg" MMONLY
+run "$M"
+check "two cars in one photo are both reported" says "two.jpg: Porsche Taycan I facelift (2024-) 98.7%, Black, front-left; Volvo XC60 I facelift (2013-2017) 98.7%"
+check "two cars get rows 1 and 2, in order" grep -q '^"two.jpg",2,"recognized","Volvo"' "$M/carnet-results/results.csv"
+check "a make-and-model answer is reported" says "mm.jpg: Porsche Taycan 98.7%, Black, front-left"
+check "a make-and-model answer has a row" grep -q '^"mm.jpg",1,"recognized","Porsche","Taycan",,,0.9871' "$M/carnet-results/results.csv"
+
 # --- CarNET Server: no key, no limits ------------------------------------------------------------------------
 S=$WORK/server
 photo "$S/1.jpg" CAR

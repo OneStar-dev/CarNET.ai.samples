@@ -41,12 +41,18 @@ CarNET Server needs no key.
 Results: one answer per photo (DIR/<photo>.json) and DIR/results.csv with one
 row per car.
 
-Exit codes: 0 every photo answered, 1 some photos not answered or an error,
-2 wrong options, 3 stopped because the key's limit ran out.
+Exit codes: 0 finished (photos over 12 MB are skipped and listed), 1 some photos
+got no answer, a folder could not be read or an error stopped it, 2 wrong
+options, 3 stopped because the key's limit ran out.
 EOF
 }
 
-die() { echo "carnet-folder: $*" >&2; exit 1; }
+CSV_READY=''
+die() { # a fatal error; once answers may exist, results.csv is rebuilt first
+  echo "carnet-folder: $*" >&2
+  [ -z "$CSV_READY" ] || write_csv
+  exit 1
+}
 usage_error() { echo "carnet-folder: $*" >&2; echo "Try: carnet-folder.sh --help" >&2; exit 2; }
 
 DIR='' OUT='' REGION='' PARAMS='' WAIT=0 RECURSIVE=0
@@ -185,7 +191,7 @@ recognize() { # $1 photo, $2 where its answer goes
         elif jq -e '.is_success != true and .error.code == 2' "$TMP/body" >/dev/null; then
           reason='an error on the API side'
         else
-          mkdir -p "$(dirname "$2")" && cp "$TMP/body" "$2.part" && mv "$2.part" "$2" && return 0
+          mkdir -p "${2%/*}" && cp "$TMP/body" "$2.part" && mv "$2.part" "$2" && return 0
           die "could not save the answer to $2"
         fi ;;
       429)
@@ -209,6 +215,7 @@ recognize() { # $1 photo, $2 where its answer goes
       ERROR="$reason (tried 4 times)"
       return 1
     fi
+    [ "$Q_LEFT" != 0 ] || limit_used_up # the failed try used the last request: don't send one the API will refuse
     sleep $((tries * tries * 2))
   done
 }
@@ -247,7 +254,7 @@ CSV='
 write_csv() {
   {
     echo 'photo,car,status,make,model,generation,years,probability,color,angle,box_left,box_top,box_right,box_bottom,error'
-    find "$OUT" -type f -name '*.json' -exec jq -r --arg out "$OUT/" "$CSV" {} + | LC_ALL=C sort
+    find "$OUT" -type f -name '*.json' -print0 | LC_ALL=C sort -z | xargs -0 -r jq -r --arg out "$OUT/" "$CSV"
   } >"$OUT/results.csv.part" && mv "$OUT/results.csv.part" "$OUT/results.csv"
 }
 
@@ -282,6 +289,15 @@ mkdir -p "$OUT" || die "could not make the folder $OUT"
 
 DEPTH=(-maxdepth 1)
 [ "$RECURSIVE" = 0 ] || DEPTH=()
+find "$DIR" ${DEPTH[@]+"${DEPTH[@]}"} -type f ! -name '._*' \( -iname '*.jpg' -o -iname '*.jpeg' \
+  -o -iname '*.png' -o -iname '*.webp' -o -iname '*.gif' -o -iname '*.bmp' -o -iname '*.tif' -o -iname '*.tiff' \) \
+  -print0 | LC_ALL=C sort -z >"$TMP/photos"
+FIND_STATUS=${PIPESTATUS[0]} # not 0 when find could not read some folders (it says which above)
+unread_folders() {
+  [ "$FIND_STATUS" -eq 0 ] && return 1
+  echo "Some folders could not be read (see the messages above); their photos were not sent."
+}
+
 TODO=()
 ALL=0
 while IFS= read -r -d '' f; do
@@ -292,22 +308,23 @@ while IFS= read -r -d '' f; do
   else
     TODO+=("$f")
   fi
-done < <(find "$DIR" ${DEPTH[@]+"${DEPTH[@]}"} -type f ! -name '._*' \( -iname '*.jpg' -o -iname '*.jpeg' \
-  -o -iname '*.png' -o -iname '*.webp' -o -iname '*.gif' -o -iname '*.bmp' -o -iname '*.tif' -o -iname '*.tiff' \) \
-  -print0 | LC_ALL=C sort -z)
+done <"$TMP/photos"
 
 if [ $ALL -eq 0 ]; then
   echo "No photos in $DIR (JPEG, PNG, WEBP, GIF, BMP or TIFF).${DEPTH[0]+ Add -r to include subfolders.}"
+  unread_folders && exit 1
   exit 0
 fi
 TOTAL=${#TODO[@]}
 if [ "$TOTAL" -eq 0 ]; then
   write_csv
   echo "All $ALL photos already have an answer. Results: $OUT/results.csv"
+  unread_folders && exit 1
   exit 0
 fi
 [ $BEFORE -eq 0 ] || echo "$BEFORE of $ALL photos already have an answer; sending the other $TOTAL."
 
+CSV_READY=1
 n=0
 for photo in "${TODO[@]}"; do
   n=$((n + 1))
@@ -345,5 +362,6 @@ for photo in "${TODO[@]}"; do
 done
 
 finish
+unread_folders && exit 1
 [ $FAILED -eq 0 ] || exit 1
 exit 0
