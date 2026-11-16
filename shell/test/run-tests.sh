@@ -210,6 +210,7 @@ photo "$S/4.jpg" CAR
 start_server --no-key --rate 2
 KEY='' run "$S"
 check "CarNET Server without a key works" code_is 0
+check "CarNET Server: all 4 photos get an answer" says "Sent 4 photos: 3 with a car, 1 without a car."
 check "CarNET Server: no limit line" lacks "The key has"
 check "CarNET Server: its per-second limit is kept without refusals" [ "$(server_said '^429')" = 0 ]
 
