@@ -1,0 +1,6 @@
+# Answers written by the folder script
+carnet-results/
+# Keys and local settings never go into git
+.env
+*.key
+.DS_Store
