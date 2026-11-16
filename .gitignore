@@ -4,3 +4,15 @@ carnet-results/
 .env
 *.key
 .DS_Store
+# Xcode
+xcuserdata/
+*.xcuserstate
+DerivedData/
+# Android and Gradle
+.gradle/
+.kotlin/
+local.properties
+build/
+.idea/
+*.iml
+captures/

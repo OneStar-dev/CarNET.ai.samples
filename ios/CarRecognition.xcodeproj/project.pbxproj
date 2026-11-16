@@ -1,0 +1,448 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1BA298151076BCD6F79F7BF5 /* Recognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48B592B3E79A7FA2D2C9129F /* Recognizer.swift */; };
+		2463EBE1240DD4E7DFB5F6BF /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C8A69DF80E2319349C1574D /* Settings.swift */; };
+		8049D640FADF2C886ECD9BE6 /* example.jpg in Resources */ = {isa = PBXBuildFile; fileRef = E008495C1B7A07698F5B3E87 /* example.jpg */; };
+		85DC14EDC9E834CF421E6185 /* PhotoShrinker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F169DD7B3993522614854B /* PhotoShrinker.swift */; };
+		95D5D11E069685981458BCA9 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2DF47C1F335720C0CC80B6 /* ContentView.swift */; };
+		A01239ABE7AF9A9E31D24946 /* CarRecognitionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8C4E63ABCEFDC24785EE60 /* CarRecognitionTests.swift */; };
+		B5414D10864FB05C3D1ECB8E /* CarnetClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6E1F52E2CCC7238FB556230 /* CarnetClient.swift */; };
+		C7EBE16C823569CC559E30FD /* CameraPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73F427D2BD462E4BB230D64 /* CameraPicker.swift */; };
+		E76BC846C47D394F6380C861 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B590780E3EE9F785768A0B /* SettingsView.swift */; };
+		F685500D07D01EAD0B56A37E /* CarRecognitionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECFFCADFDFF35FB9FD06E88 /* CarRecognitionApp.swift */; };
+		FF4BC64DC3FF20297237FE7D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EDE5E8146ED3D6BAA2A3BFE3 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		8674B9B54AF87F019308FF2D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6D860145E9565AF2ECFF3C07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3CD6B4802CD0C022ABF3C9BE;
+			remoteInfo = CarRecognition;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		04F169DD7B3993522614854B /* PhotoShrinker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoShrinker.swift; sourceTree = "<group>"; };
+		09A656B65E0561F67AB2086C /* CarRecognitionTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = CarRecognitionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A7A064256E9E1870C9B5EF9 /* CarRecognition.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CarRecognition.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1ECFFCADFDFF35FB9FD06E88 /* CarRecognitionApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarRecognitionApp.swift; sourceTree = "<group>"; };
+		2F2DF47C1F335720C0CC80B6 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		48B592B3E79A7FA2D2C9129F /* Recognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recognizer.swift; sourceTree = "<group>"; };
+		6C8A69DF80E2319349C1574D /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		93B590780E3EE9F785768A0B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		C73F427D2BD462E4BB230D64 /* CameraPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPicker.swift; sourceTree = "<group>"; };
+		CAA7CF41BFB23BD8DA21D9A0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		E008495C1B7A07698F5B3E87 /* example.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = example.jpg; sourceTree = "<group>"; };
+		E6E1F52E2CCC7238FB556230 /* CarnetClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarnetClient.swift; sourceTree = "<group>"; };
+		EDE5E8146ED3D6BAA2A3BFE3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FB8C4E63ABCEFDC24785EE60 /* CarRecognitionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarRecognitionTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		1C191846DDAB99775A52BA5C /* CarRecognitionTests */ = {
+			isa = PBXGroup;
+			children = (
+				FB8C4E63ABCEFDC24785EE60 /* CarRecognitionTests.swift */,
+			);
+			path = CarRecognitionTests;
+			sourceTree = "<group>";
+		};
+		436B21C3C3FFA5628C30E75D /* CarRecognition */ = {
+			isa = PBXGroup;
+			children = (
+				EDE5E8146ED3D6BAA2A3BFE3 /* Assets.xcassets */,
+				C73F427D2BD462E4BB230D64 /* CameraPicker.swift */,
+				E6E1F52E2CCC7238FB556230 /* CarnetClient.swift */,
+				1ECFFCADFDFF35FB9FD06E88 /* CarRecognitionApp.swift */,
+				2F2DF47C1F335720C0CC80B6 /* ContentView.swift */,
+				E008495C1B7A07698F5B3E87 /* example.jpg */,
+				CAA7CF41BFB23BD8DA21D9A0 /* Info.plist */,
+				04F169DD7B3993522614854B /* PhotoShrinker.swift */,
+				48B592B3E79A7FA2D2C9129F /* Recognizer.swift */,
+				6C8A69DF80E2319349C1574D /* Settings.swift */,
+				93B590780E3EE9F785768A0B /* SettingsView.swift */,
+			);
+			path = CarRecognition;
+			sourceTree = "<group>";
+		};
+		721C4F50451DC59058AE0829 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1A7A064256E9E1870C9B5EF9 /* CarRecognition.app */,
+				09A656B65E0561F67AB2086C /* CarRecognitionTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7A69ED1573C6729FA3C5A1AC = {
+			isa = PBXGroup;
+			children = (
+				436B21C3C3FFA5628C30E75D /* CarRecognition */,
+				1C191846DDAB99775A52BA5C /* CarRecognitionTests */,
+				721C4F50451DC59058AE0829 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3CD6B4802CD0C022ABF3C9BE /* CarRecognition */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F56345A037B81D56DD53E334 /* Build configuration list for PBXNativeTarget "CarRecognition" */;
+			buildPhases = (
+				090F83E616B1F74CC0F840E7 /* Sources */,
+				DACBBF0E86299FDB26FDD292 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CarRecognition;
+			packageProductDependencies = (
+			);
+			productName = CarRecognition;
+			productReference = 1A7A064256E9E1870C9B5EF9 /* CarRecognition.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C745C04C9075C3D73C859FC9 /* CarRecognitionTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 61B4AE48B82134B37D388EB8 /* Build configuration list for PBXNativeTarget "CarRecognitionTests" */;
+			buildPhases = (
+				82EF014E5E20752F0085C57F /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2B54652F7BD43F5FE6D8CC65 /* PBXTargetDependency */,
+			);
+			name = CarRecognitionTests;
+			packageProductDependencies = (
+			);
+			productName = CarRecognitionTests;
+			productReference = 09A656B65E0561F67AB2086C /* CarRecognitionTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6D860145E9565AF2ECFF3C07 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					3CD6B4802CD0C022ABF3C9BE = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					C745C04C9075C3D73C859FC9 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 58C9A44045CE27831BFA0433 /* Build configuration list for PBXProject "CarRecognition" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 7A69ED1573C6729FA3C5A1AC;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 721C4F50451DC59058AE0829 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3CD6B4802CD0C022ABF3C9BE /* CarRecognition */,
+				C745C04C9075C3D73C859FC9 /* CarRecognitionTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DACBBF0E86299FDB26FDD292 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF4BC64DC3FF20297237FE7D /* Assets.xcassets in Resources */,
+				8049D640FADF2C886ECD9BE6 /* example.jpg in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		090F83E616B1F74CC0F840E7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C7EBE16C823569CC559E30FD /* CameraPicker.swift in Sources */,
+				F685500D07D01EAD0B56A37E /* CarRecognitionApp.swift in Sources */,
+				B5414D10864FB05C3D1ECB8E /* CarnetClient.swift in Sources */,
+				95D5D11E069685981458BCA9 /* ContentView.swift in Sources */,
+				85DC14EDC9E834CF421E6185 /* PhotoShrinker.swift in Sources */,
+				1BA298151076BCD6F79F7BF5 /* Recognizer.swift in Sources */,
+				2463EBE1240DD4E7DFB5F6BF /* Settings.swift in Sources */,
+				E76BC846C47D394F6380C861 /* SettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		82EF014E5E20752F0085C57F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A01239ABE7AF9A9E31D24946 /* CarRecognitionTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2B54652F7BD43F5FE6D8CC65 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3CD6B4802CD0C022ABF3C9BE /* CarRecognition */;
+			targetProxy = 8674B9B54AF87F019308FF2D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		02C37F178151BEFF8684DB36 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = CarRecognition/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = ai.carnet.samples.CarRecognition;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		048692672F383B67B8FB300C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		167E953A0AE77DDD051E54BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = CarRecognition/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = ai.carnet.samples.CarRecognition;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D8E6EC31F270107F3833EE41 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		EAA21E405567EB20C099A0DC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = ai.carnet.samples.CarRecognitionTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CarRecognition.app/CarRecognition";
+			};
+			name = Debug;
+		};
+		ECB8027FA9C914D85C4AF3A7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = ai.carnet.samples.CarRecognitionTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CarRecognition.app/CarRecognition";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		58C9A44045CE27831BFA0433 /* Build configuration list for PBXProject "CarRecognition" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				048692672F383B67B8FB300C /* Debug */,
+				D8E6EC31F270107F3833EE41 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		61B4AE48B82134B37D388EB8 /* Build configuration list for PBXNativeTarget "CarRecognitionTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EAA21E405567EB20C099A0DC /* Debug */,
+				ECB8027FA9C914D85C4AF3A7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F56345A037B81D56DD53E334 /* Build configuration list for PBXNativeTarget "CarRecognition" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				02C37F178151BEFF8684DB36 /* Debug */,
+				167E953A0AE77DDD051E54BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6D860145E9565AF2ECFF3C07 /* Project object */;
+}
